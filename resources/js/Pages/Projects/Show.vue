@@ -47,6 +47,7 @@ interface Project {
     image_url?: string | null;
     start_date?: string | null;
     end_date?: string | null;
+    end_date_formatted?: string | null;
     donations: Donation[];
 }
 
@@ -194,9 +195,11 @@ const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`
                             <span class="font-medium text-foreground">{{ translations.fields.start_date }}: </span>
                             {{ project.start_date }}
                         </div>
-                        <div v-if="project.end_date">
+                        <div
+                            v-if="project.status === 'completed' && project.end_date_formatted"
+                        >
                             <span class="font-medium text-foreground">{{ translations.fields.end_date }}: </span>
-                            {{ project.end_date }}
+                            {{ project.end_date_formatted }}
                         </div>
                     </div>
                 </CardContent>

@@ -50,4 +50,12 @@ class Project extends Model
     {
         return $this->hasMany(Donation::class);
     }
+
+    /**
+     * Get the formatted project end date.
+     */
+    public function getEndDateFormattedAttribute(): ?string
+    {
+        return $this->end_date?->format('Y-m-d');
+    }
 }
