@@ -38,6 +38,11 @@ class DonationController extends Controller
             $project->collected_amount = $project->collected_amount + $data['amount'];
             $project->progress = round(min(100, ($project->collected_amount / $project->target_amount) * 100), 2);
             $project->status = $project->progress >= 100 ? 'completed' : ($project->progress > 0 ? 'in_progress' : 'open');
+
+            if ($project->status === 'completed' && ! $project->end_date) {
+                $project->end_date = now();
+            }
+
             $project->save();
 
             return $donation;

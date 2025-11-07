@@ -143,16 +143,38 @@ class ProjectController extends Controller
             $data['image'] = $request->file('image')->store('projects', 'public');
         }
 
+        $originalEndDate = $project->end_date;
+
+        if (($data['status'] ?? null) === 'completed') {
+            unset($data['end_date']);
+        }
+
+        if (
+            $project->status === 'completed'
+            && $project->end_date
+            && (! isset($data['status']) || $data['status'] === 'completed')
+        ) {
+            unset($data['end_date']);
+        }
+
         $project->fill($data);
 
-        if ($project->isDirty('target_amount')) {
+        if ($project->isDirty('target_amount') || $project->isDirty('collected_amount')) {
             $project->progress = $project->target_amount > 0
                 ? round(min(100, ($project->collected_amount / $project->target_amount) * 100), 2)
                 : 0;
         }
 
-        if (! isset($data['status'])) {
+        if ($project->progress >= 100) {
+            $project->status = 'completed';
+        } elseif (! isset($data['status'])) {
             $project->status = $this->resolveStatus($project);
+        }
+
+        if ($project->status === 'completed') {
+            $project->end_date = $originalEndDate ?? now();
+        } else {
+            $project->end_date = null;
         }
 
         $project->save();
