@@ -55,10 +55,28 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     { title: props.translations.title, href: dashboard() },
 ]);
 
-const currencyFormatter = new Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-});
+const formatNumber = ( value :any ) =>  {
+    const numeric = Number(value || 0);
+
+    try {
+        const hasFraction = Math.abs(numeric % 1) > 0;
+
+        return new Intl.NumberFormat('en-SD', {
+            minimumFractionDigits: hasFraction ? 2 : 0,
+            maximumFractionDigits: hasFraction ? 2 : 0,
+        }).format(numeric);
+    } catch (error) {
+        return numeric.toLocaleString('en-SD', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    }
+};
+
+// const currencyFormatter = new Intl.NumberFormat('en', {
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+// },'SGD');
 
 const statusBreakdown = computed(() => {
     const openCount = Math.max(
@@ -125,7 +143,7 @@ const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`
                     <CardHeader class="pb-2">
                         <CardDescription>{{ translations.donations_amount }}</CardDescription>
                         <CardTitle class="text-3xl font-semibold text-primary">
-                            {{ currencyFormatter.format(stats.donations_amount) }}
+                            {{ formatNumber(stats.donations_amount) }}
                         </CardTitle>
                         <CardDescription>
                             {{ translations.donations_total }}: {{ stats.donations_total }}
@@ -138,7 +156,7 @@ const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`
                 <Card class="lg:col-span-2">
                     <CardHeader>
                         <CardTitle>{{ translations.overall_progress }}</CardTitle>
-                        <CardDescription>{{ translations.donations_amount }}: {{ currencyFormatter.format(stats.donations_amount) }}</CardDescription>
+                        <CardDescription>{{ translations.donations_amount }}: {{ formatNumber(stats.donations_amount) }}</CardDescription>
                     </CardHeader>
                     <CardContent class="space-y-6">
                         <div class="space-y-2">

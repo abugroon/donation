@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
     private function seedAdminUser(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => ' '],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('password'),

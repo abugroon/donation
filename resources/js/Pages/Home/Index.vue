@@ -84,12 +84,23 @@ const props = defineProps<{
 const page = usePage<AppPageProps>();
 const authUser = computed(() => page.props.auth?.user ?? null);
 
-const amountFormatter = new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-});
+const formatNumber = ( value :any ) =>  {
+    const numeric = Number(value || 0);
+
+    try {
+        const hasFraction = Math.abs(numeric % 1) > 0;
+
+        return new Intl.NumberFormat('en-SD', {
+            minimumFractionDigits: hasFraction ? 2 : 0,
+            maximumFractionDigits: hasFraction ? 2 : 0,
+        }).format(numeric);
+    } catch (error) {
+        return numeric.toLocaleString('en-SD', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    }
+};
 
 const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`;
 </script>
@@ -191,7 +202,7 @@ const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`
                             </div>
                             <div class="rounded-2xl bg-white/5 p-6">
                                 <p class="text-sm text-white/60">{{ translations.stats_donations }}</p>
-                                <p class="mt-2 text-3xl font-semibold">{{ amountFormatter.format(stats.donations_amount) }}</p>
+                                <p class="mt-2 text-3xl font-semibold">{{ formatNumber(stats.donations_amount) }}</p>
                             </div>
                             <div class="rounded-2xl bg-white/5 p-6">
                                 <p class="text-sm text-white/60">{{ translations.stats_supporters }}</p>
@@ -292,11 +303,11 @@ const progressWidth = (value: number) => `${Math.min(100, Math.max(0, value))}%`
                             <div class="flex items-center justify-between text-sm text-white/70">
                                 <div>
                                     <span class="block text-xs uppercase tracking-wide text-white/50">{{ translations.collected_label }}</span>
-                                    <span class="text-base font-semibold text-white">{{ amountFormatter.format(project.collected_amount) }}</span>
+                                    <span class="text-base font-semibold text-white">{{ formatNumber(project.collected_amount) }}</span>
                                 </div>
                                 <div class="text-right">
                                     <span class="block text-xs uppercase tracking-wide text-white/50">{{ translations.target_label }}</span>
-                                    <span class="text-base font-semibold text-white">{{ amountFormatter.format(project.target_amount) }}</span>
+                                    <span class="text-base font-semibold text-white">{{ formatNumber(project.target_amount) }}</span>
                                 </div>
                             </div>
                             <div class="flex gap-3">
